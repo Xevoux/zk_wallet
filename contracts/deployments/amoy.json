@@ -1,0 +1,10 @@
+{
+  "network": "amoy",
+  "chainId": "80002",
+  "deployer": "0x16a747E428a954328bd3cb67963fa85f4175E6a4",
+  "timestamp": "2025-11-30T14:02:39.936Z",
+  "contracts": {
+    "Groth16Verifier": "0xf0FB3bC5E32C3199357A9c409D0851a46A10e7F5",
+    "ZKPayment": "0xE166C07B874D0978671b87338A6416A96A06db9A"
+  }
+}

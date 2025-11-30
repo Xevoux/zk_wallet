@@ -18,7 +18,7 @@ module.exports = {
       url: process.env.POLYGON_AMOY_RPC_URL || "https://rpc-amoy.polygon.technology/",
       accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
       chainId: 80002,
-      gasPrice: 20000000000 // 20 gwei
+      gasPrice: 35000000000 // 35 gwei (increased for network requirements)
     },
     // Legacy Mumbai (deprecated - use Amoy instead)
     mumbai: {
@@ -40,11 +40,7 @@ module.exports = {
     }
   },
   etherscan: {
-    apiKey: {
-      polygonAmoy: process.env.POLYGONSCAN_API_KEY || "",
-      polygonMumbai: process.env.POLYGONSCAN_API_KEY || "",
-      polygon: process.env.POLYGONSCAN_API_KEY || ""
-    },
+    apiKey: process.env.POLYGONSCAN_API_KEY || "",
     customChains: [
       {
         network: "polygonAmoy",
