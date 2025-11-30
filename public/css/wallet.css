@@ -1,0 +1,452 @@
+/* Wallet Page Styles */
+.wallet-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 24px 48px;
+    color: var(--light-text);
+    min-height: calc(100vh - 160px);
+    display: flex;
+    flex-direction: column;
+}
+
+.wallet-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.wallet-header h1 {
+    font-size: 2rem;
+    color: var(--light-text);
+    margin-bottom: 0.25rem;
+}
+
+.wallet-header p {
+    color: var(--text-muted);
+}
+
+.wallet-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+    align-items: stretch;
+}
+
+@media (max-width: 1200px) {
+    .wallet-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .wallet-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.wallet-info-card,
+.qr-code-card,
+.faucet-card {
+    background: rgba(42, 37, 72, 0.95);
+    border-radius: 18px;
+    padding: 28px;
+    border: 1px solid rgba(132, 94, 247, 0.25);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(12px);
+}
+
+.wallet-info-card {
+    grid-column: span 2;
+}
+
+@media (max-width: 1200px) {
+    .wallet-info-card {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 768px) {
+    .wallet-info-card {
+        grid-column: span 1;
+    }
+}
+
+.wallet-info-card h2,
+.qr-code-card h2,
+.faucet-card h2 {
+    margin-top: 0;
+    color: var(--text-secondary);
+}
+
+/* Wallet info */
+.wallet-detail {
+    margin-bottom: 18px;
+}
+
+.wallet-detail label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+}
+
+.wallet-detail label i {
+    color: var(--text-secondary);
+}
+
+.balance-display {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.balance-amount {
+    font-size: 2rem;
+    color: #c084fc;
+    margin: 0;
+}
+
+.address-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.address-field code {
+    flex: 1;
+    font-size: 0.9rem;
+    word-break: break-all;
+    color: var(--light-text);
+}
+
+.btn-copy {
+    border: none;
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: rgba(132, 94, 247, 0.2);
+    color: var(--light-text);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-copy:hover {
+    background: rgba(132, 94, 247, 0.35);
+}
+
+.btn-toggle {
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 12px;
+    padding: 0;
+    width: 42px;
+    height: 42px;
+    margin-left: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--light-text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-toggle i {
+    font-size: 1rem;
+}
+
+.btn-toggle:hover {
+    background: rgba(132, 94, 247, 0.22);
+    border-color: rgba(132, 94, 247, 0.5);
+    color: #f5ecff;
+}
+
+.wallet-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+
+@media (max-width: 640px) {
+    .wallet-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+.wallet-actions .btn {
+    width: 100%;
+}
+
+/* Faucet card */
+.faucet-card {
+    background: linear-gradient(135deg, #5848c2, #5b21b6);
+    color: #f4f4ff;
+    border: none;
+}
+
+.faucet-subtitle {
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 18px;
+    font-size: 0.95rem;
+}
+
+.faucet-info-box {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.faucet-stat {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.faucet-stat i {
+    font-size: 1.8rem;
+    opacity: 0.9;
+}
+
+.faucet-status {
+    margin-top: 15px;
+    padding: 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    font-size: 0.9rem;
+}
+
+.faucet-status.success {
+    background: rgba(16, 185, 129, 0.18);
+    border-color: rgba(16, 185, 129, 0.4);
+}
+
+.faucet-status.error {
+    background: rgba(239, 68, 68, 0.18);
+    border-color: rgba(239, 68, 68, 0.4);
+}
+
+.faucet-status.warning {
+    background: rgba(251, 191, 36, 0.18);
+    border-color: rgba(251, 191, 36, 0.4);
+}
+
+.faucet-note {
+    margin-top: 20px;
+    padding: 18px;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.35);
+    border: 1px dashed rgba(255, 255, 255, 0.25);
+    font-size: 0.9rem;
+}
+
+.faucet-note ul {
+    margin: 10px 0 0 18px;
+    padding: 0;
+}
+
+.faucet-note li {
+    margin-bottom: 6px;
+}
+
+/* QR card */
+.qr-display-area {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.qr-code-container {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.qr-image {
+    max-width: 220px;
+    width: 100%;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.qr-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.qr-subtitle {
+    color: var(--text-muted);
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+.qr-generator {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.qr-generator h3 {
+    margin-top: 0;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.qr-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.qr-info {
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(251, 191, 36, 0.12);
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    color: #fde68a;
+}
+
+.qr-info ul {
+    margin: 8px 0 0 18px;
+}
+
+/* Logs */
+.logs-card {
+    background: rgba(42, 37, 72, 0.95);
+    border-radius: 18px;
+    padding: 28px;
+    border: 1px solid rgba(132, 94, 247, 0.25);
+    box-shadow: var(--shadow);
+}
+
+.logs-card h3 {
+    margin-top: 0;
+    color: var(--text-secondary);
+}
+
+.logs-container {
+    background: #101828;
+    border: 1px solid rgba(16, 24, 40, 0.6);
+    border-radius: 14px;
+    padding: 18px;
+    max-height: 320px;
+    overflow-y: auto;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: #cbd5f5;
+}
+
+.log-entry {
+    margin-bottom: 6px;
+}
+
+.log-time {
+    color: #7dd3fc;
+    margin-right: 6px;
+}
+
+.log-info { color: #93c5fd; }
+.log-success { color: #6ee7b7; }
+.log-warning { color: #fde68a; }
+.log-error { color: #fca5a5; }
+
+/* Modal */
+.qr-code-card,
+.logs-card {
+    width: 100%;
+}
+
+@media (min-width: 992px) {
+    .qr-code-card {
+        grid-column: span 1;
+    }
+    .logs-card {
+        grid-column: span 2;
+    }
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 5, 10, 0.65);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 480px;
+    background: rgba(42, 37, 72, 0.98);
+    border-radius: 18px;
+    border: 1px solid rgba(132, 94, 247, 0.25);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+.modal-header {
+    padding: 22px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.modal-close:hover {
+    color: var(--light-text);
+}
+
+.modal-content form {
+    padding: 24px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.modal-actions .btn {
+    flex: 1;
+}
