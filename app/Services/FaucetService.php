@@ -14,7 +14,7 @@ class FaucetService
 {
     private $polygonService;
     private $initialTestAmount = 0.01; // 0.01 MATIC untuk testing awal
-    private $minMasterWalletBalance = 0.1; // Minimal balance master wallet
+    private $minMasterWalletBalance = 0.05; // Minimal balance master wallet
 
     public function __construct(PolygonService $polygonService)
     {
@@ -52,6 +52,9 @@ class FaucetService
                     'tx_hash' => $result['tx_hash'],
                     'simulation' => $result['simulation'] ?? false,
                 ]);
+
+                // Sync wallet balance from blockchain after distribution
+                $this->polygonService->syncWalletBalance($walletAddress);
 
                 return [
                     'success' => true,

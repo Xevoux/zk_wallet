@@ -1,169 +1,279 @@
-# ZK-SNARK Circuits
+# ZK-SNARK Circuits for ZK Payment
 
-This directory contains Circom circuits for Zero-Knowledge Proofs used in the ZK Payment system.
+This directory contains the circom circuits for zero-knowledge proofs used in the ZK Payment system.
 
-## Circuits Overview
+## 📋 Prerequisites
 
-### 1. balance_check.circom
-**Purpose**: Prove that a user has sufficient balance for a transaction without revealing the actual balance.
+### 1. Install Circom
 
-**Private Inputs**:
-- `balance`: User's actual balance (kept secret)
-- `randomness`: Random value for commitment blinding
-
-**Public Inputs**:
-- `amount`: Minimum required amount for transaction
-- `commitment`: Pedersen commitment to the balance
-
-**Use Case**: Used during payment transactions to prove sufficient funds without exposing wallet balance.
-
-### 2. private_transfer.circom
-**Purpose**: Prove a valid transfer between parties without revealing sender, receiver, or amount.
-
-**Private Inputs**:
-- `senderBalance`: Sender's current balance
-- `amount`: Transfer amount
-- `senderSecret`: Sender's secret key
-- `receiverAddress`: Receiver's wallet address
-- `randomness`: Random value for new commitment
-
-**Public Inputs**:
-- `senderCommitment`: Commitment to sender's initial state
-- `nullifier`: Prevents double-spending
-- `newCommitment`: Commitment to the new state after transfer
-
-**Use Case**: Private transactions where transaction details remain confidential.
-
-### 3. auth_proof.circom
-**Purpose**: Authenticate users by proving knowledge of password without transmitting it.
-
-**Private Inputs**:
-- `password`: User's password (never revealed)
-- `randomness`: Random salt for commitment
-
-**Public Inputs**:
-- `passwordHash`: Hash of the password
-- `commitment`: Commitment to the password
-
-**Use Case**: Zero-knowledge authentication for user login.
-
-## Setup Instructions
-
-### Prerequisites
 ```bash
-# Install circom compiler
-npm install -g circom
+# Install Rust (if not installed)
+curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
 
-# Install snarkjs
-npm install -g snarkjs
+# Clone and build circom
+git clone https://github.com/iden3/circom.git
+cd circom
+cargo build --release
+cargo install --path circom
+
+# Verify installation
+circom --version
 ```
 
-### Compile Circuits
+**Windows Users:**
+- Install Rust from https://rustup.rs/
+- Build circom using the same commands in PowerShell
 
-1. **Compile a circuit**:
+### 2. Install Node.js Dependencies
+
 ```bash
-circom circuits/balance_check.circom --r1cs --wasm --sym -o circuits/build/
+cd circuits
+npm install
 ```
 
-2. **Download Powers of Tau** (ceremony file):
+## 🏗️ Build Process
+
+### Quick Build (All Steps)
+
 ```bash
-# For circuits with < 2^12 constraints
-wget https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_12.ptau -O circuits/pot12_final.ptau
+npm run build
 ```
 
-3. **Generate proving key**:
+This will:
+1. Compile all circuits
+2. Run trusted setup
+3. Export verification keys
+4. Generate Solidity verifiers
+
+### Manual Step-by-Step Build
+
+#### Step 1: Download Powers of Tau
+
 ```bash
-snarkjs groth16 setup circuits/build/balance_check.r1cs circuits/pot12_final.ptau circuits/balance_check_0000.zkey
+# Create directory
+mkdir -p ptau
+
+# Download (14 is sufficient for our circuits)
+npm run download:ptau
+# or manually:
+curl -L https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_14.ptau -o ptau/pot14_final.ptau
 ```
 
-4. **Contribute to Phase 2** (adds randomness):
+**Note:** The Powers of Tau ceremony provides the common reference string (CRS) for Groth16. The file `pot14_final.ptau` supports circuits up to 2^14 constraints.
+
+#### Step 2: Compile Circuits
+
 ```bash
-snarkjs zkey contribute circuits/balance_check_0000.zkey circuits/balance_check_final.zkey --name="First contribution" -v
+# Compile individual circuits
+npm run compile:auth      # Auth proof circuit
+npm run compile:balance   # Balance check circuit  
+npm run compile:transfer  # Private transfer circuit
+
+# Or compile all
+npm run compile:all
 ```
 
-5. **Export verification key**:
+Output files (in `build/<circuit_name>/`):
+- `<circuit>.r1cs` - Rank-1 Constraint System
+- `<circuit>.sym` - Debug symbols
+- `<circuit>_js/<circuit>.wasm` - WebAssembly for proof generation
+
+#### Step 3: Trusted Setup (Groth16)
+
 ```bash
-snarkjs zkey export verificationkey circuits/balance_check_final.zkey storage/keys/balance_verification_key.json
+# Run setup for each circuit
+npm run setup:auth
+npm run setup:balance
+npm run setup:transfer
+
+# Or all at once
+npm run setup:all
 ```
 
-6. **Export Solidity verifier**:
+This performs:
+1. Phase 1: Initialize zkey with circuit-specific setup
+2. Phase 2: Contribute randomness (multiple contributions recommended for production)
+3. Export verification key
+
+Output files (in `keys/`):
+- `<circuit>_final.zkey` - Proving key
+- `<circuit>_verification_key.json` - Verification key
+
+#### Step 4: Export to Application
+
 ```bash
-snarkjs zkey export solidityverifier circuits/balance_check_final.zkey contracts/BalanceCheckVerifier.sol
+# Export verification keys to Laravel storage
+npm run export:keys
+
+# Generate Solidity verifier contracts
+npm run export:verifiers
 ```
 
-## Generate Proofs (Client-Side)
+Files are copied to:
+- `../storage/app/zk-keys/` - For server-side verification
+- `../public/zk/` - For client-side proof generation
+- `../contracts/contracts/verifiers/` - Solidity contracts
 
-### Example: Balance Check Proof
+## 📁 Directory Structure
 
-1. **Create input JSON**:
-```json
-{
-  "balance": "1000000000000000000",
-  "randomness": "12345678901234567890",
-  "amount": "500000000000000000",
-  "commitment": "9876543210987654321"
-}
+```
+circuits/
+├── auth_proof.circom         # Authentication circuit
+├── balance_check.circom      # Balance verification circuit
+├── private_transfer.circom   # Private transfer circuit
+├── package.json              # Build scripts
+├── README.md                 # This file
+├── ptau/                     # Powers of Tau files
+│   └── pot14_final.ptau
+├── build/                    # Compiled circuits
+│   ├── auth_proof/
+│   │   ├── auth_proof.r1cs
+│   │   ├── auth_proof.sym
+│   │   └── auth_proof_js/
+│   │       └── auth_proof.wasm
+│   ├── balance_check/
+│   └── private_transfer/
+├── keys/                     # Generated keys
+│   ├── auth_proof_final.zkey
+│   ├── auth_proof_verification_key.json
+│   ├── balance_check_final.zkey
+│   ├── balance_check_verification_key.json
+│   ├── private_transfer_final.zkey
+│   └── private_transfer_verification_key.json
+└── scripts/                  # Build scripts
+    ├── setup.js
+    ├── export-keys.js
+    ├── export-verifiers.js
+    └── test-proofs.js
 ```
 
-2. **Generate witness**:
+## 🔐 Circuits Overview
+
+### auth_proof.circom
+
+**Purpose:** Prove knowledge of password without revealing it
+
+**Private Inputs:**
+- `password` - User's password (as field element)
+- `salt` - Random salt for commitment
+
+**Public Inputs:**
+- `commitment` - Poseidon(password, salt)
+
+**Constraints:** ~500
+
+### balance_check.circom
+
+**Purpose:** Prove balance ≥ amount without revealing actual balance
+
+**Private Inputs:**
+- `balance` - Actual balance
+- `salt` - Commitment randomness
+
+**Public Inputs:**
+- `minAmount` - Required minimum amount
+- `balanceCommitment` - Poseidon(balance, salt)
+
+**Constraints:** ~800
+
+### private_transfer.circom
+
+**Purpose:** Execute private transfer with balance and ownership verification
+
+**Private Inputs:**
+- `senderBalance` - Sender's current balance
+- `amount` - Transfer amount
+- `senderSecret` - Sender's secret key
+- `senderSalt` - Salt for sender commitment
+- `newSalt` - Salt for new commitment
+- `recipientAddress` - Recipient's address
+
+**Public Inputs:**
+- `senderCommitment` - Commitment to sender's state
+- `nullifier` - Prevents double-spending
+- `newBalanceCommitment` - Commitment to new balance
+- `recipientCommitment` - Commitment for recipient
+
+**Constraints:** ~2000
+
+## 🧪 Testing
+
 ```bash
-snarkjs wtns calculate circuits/build/balance_check_js/balance_check.wasm input.json witness.wtns
+# Run proof generation and verification tests
+npm run test
 ```
 
-3. **Generate proof**:
+This generates test proofs and verifies them using the generated keys.
+
+## 🔒 Production Security Considerations
+
+### Trusted Setup Ceremony
+
+For production, the trusted setup should involve multiple independent parties:
+
 ```bash
-snarkjs groth16 prove circuits/balance_check_final.zkey witness.wtns proof.json public.json
+# Initial setup
+snarkjs zkey new circuit.r1cs pot14_final.ptau circuit_0000.zkey
+
+# Contribution 1 (Party A)
+snarkjs zkey contribute circuit_0000.zkey circuit_0001.zkey --name="Party A" -v
+
+# Contribution 2 (Party B)
+snarkjs zkey contribute circuit_0001.zkey circuit_0002.zkey --name="Party B" -v
+
+# ... more contributions
+
+# Final beacon (public randomness)
+snarkjs zkey beacon circuit_000N.zkey circuit_final.zkey 0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f 10 -n="Final Beacon"
+
+# Verify final zkey
+snarkjs zkey verify circuit.r1cs pot14_final.ptau circuit_final.zkey
 ```
 
-4. **Verify proof**:
+### Audit Checklist
+
+- [ ] Multiple trusted setup contributors
+- [ ] Circuit code audited
+- [ ] Verification key matches deployed contract
+- [ ] Nullifier storage properly implemented
+- [ ] No secret leakage in public signals
+
+## 🛠️ Troubleshooting
+
+### "Cannot find module 'circomlib'"
+
 ```bash
-snarkjs groth16 verify storage/keys/balance_verification_key.json public.json proof.json
+npm install circomlib
 ```
 
-## Verify Proofs (Server-Side)
+### "Powers of Tau file not found"
 
-The Laravel backend uses the `ZKSNARKService` to verify proofs:
-
-```php
-$zkService = new ZKSNARKService();
-$isValid = $zkService->verifyWithSnarkJS($proofData, 'balance');
+```bash
+npm run download:ptau
 ```
 
-## Circuit Constraints
+### "Constraint too large"
 
-- **balance_check.circom**: ~200 constraints
-- **private_transfer.circom**: ~500 constraints  
-- **auth_proof.circom**: ~150 constraints
+Use a larger Powers of Tau file:
+```bash
+curl -L https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_16.ptau -o ptau/pot16_final.ptau
+```
 
-For larger circuits, use a higher Powers of Tau ceremony file (e.g., `pot14`, `pot16`).
+### "WebAssembly memory error"
 
-## Security Considerations
+Increase Node.js memory:
+```bash
+NODE_OPTIONS=--max-old-space-size=8192 npm run compile:all
+```
 
-1. **Trusted Setup**: Use production-grade Powers of Tau files from trusted ceremonies
-2. **Randomness**: Always use cryptographically secure random values
-3. **Nullifiers**: Store nullifiers in database to prevent double-spending
-4. **Key Management**: Protect proving keys and verification keys
-
-## Integration with Smart Contracts
-
-The verification keys are exported to Solidity contracts in the `contracts/` directory. These verifiers are deployed on Polygon and called by the `ZKPayment` contract to verify proofs on-chain.
-
-## Development vs Production
-
-**Development**:
-- Use smaller Powers of Tau files (pot12)
-- Simulate proofs when needed
-- Single contribution to Phase 2
-
-**Production**:
-- Use production Powers of Tau (pot14+)
-- Multiple contributions to Phase 2
-- Hardware wallet for key generation
-- Professional security audit
-
-## Resources
+## 📚 Resources
 
 - [Circom Documentation](https://docs.circom.io/)
-- [SnarkJS Documentation](https://github.com/iden3/snarkjs)
-- [Circomlib](https://github.com/iden3/circomlib)
-- [ZK-SNARK Explained](https://zkp.science/)
+- [snarkjs GitHub](https://github.com/iden3/snarkjs)
+- [circomlib (circuit library)](https://github.com/iden3/circomlib)
+- [ZK-SNARK Tutorial](https://blog.iden3.io/first-zk-proof.html)
+- [Groth16 Paper](https://eprint.iacr.org/2016/260.pdf)
+
+## 📝 License
+
+MIT License - See main project LICENSE file

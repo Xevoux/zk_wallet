@@ -1,47 +1,45 @@
-pragma circom 2.0.0;
+pragma circom 2.1.6;
 
 include "../node_modules/circomlib/circuits/comparators.circom";
-include "../node_modules/circomlib/circuits/pedersen.circom";
+include "../node_modules/circomlib/circuits/poseidon.circom";
 
 /**
  * Balance Check Circuit
  * Proves that balance >= amount without revealing actual balance
  * 
+ * This circuit allows a user to prove they have sufficient funds
+ * for a transaction without revealing their actual balance.
+ * 
  * Private inputs:
  *   - balance: actual balance (kept private)
- *   - randomness: random value for commitment
+ *   - salt: random value for commitment
  * 
  * Public inputs:
- *   - amount: minimum required amount
- *   - commitment: Pedersen commitment of balance
+ *   - minAmount: minimum required amount
+ *   - balanceCommitment: Poseidon commitment of balance
  */
-template BalanceCheck() {
-    // Private inputs
+template BalanceCheck(n) {
+    // Private inputs (witness)
     signal input balance;
-    signal input randomness;
+    signal input salt;
     
     // Public inputs
-    signal input amount;
-    signal input commitment;
+    signal input minAmount;
+    signal input balanceCommitment;
     
-    // Output signal
-    signal output out;
+    // 1. Verify balance commitment
+    // commitment = Poseidon(balance, salt)
+    component commitmentHasher = Poseidon(2);
+    commitmentHasher.inputs[0] <== balance;
+    commitmentHasher.inputs[1] <== salt;
+    commitmentHasher.out === balanceCommitment;
     
-    // Check that balance >= amount
-    component greaterOrEqual = GreaterEqThan(64);
-    greaterOrEqual.in[0] <== balance;
-    greaterOrEqual.in[1] <== amount;
-    greaterOrEqual.out === 1;
-    
-    // Verify Pedersen commitment
-    // commitment = Pedersen(balance, randomness)
-    component commitmentChecker = Pedersen(2);
-    commitmentChecker.in[0] <== balance;
-    commitmentChecker.in[1] <== randomness;
-    commitmentChecker.out === commitment;
-    
-    // Output 1 if proof is valid
-    out <== 1;
+    // 2. Check that balance >= minAmount
+    component gte = GreaterEqThan(n);
+    gte.in[0] <== balance;
+    gte.in[1] <== minAmount;
+    gte.out === 1;
 }
 
-component main {public [amount, commitment]} = BalanceCheck();
+// Using 64-bit comparison for balance values up to ~18 quintillion
+component main {public [minAmount, balanceCommitment]} = BalanceCheck(64);

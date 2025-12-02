@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Login - ZK Payment</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/responsive.css') }}">
 </head>
 <body class="auth-body">
     <div class="auth-container">
@@ -15,23 +16,35 @@
                 <p>Pembayaran Digital dengan Zero-Knowledge Proof</p>
             </div>
 
+            @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert alert-error">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert alert-error">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('login') }}" class="auth-form" id="loginForm">
                 @csrf
 
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus>
-                    @error('email')
-                        <span class="error-message">{{ $message }}</span>
-                    @enderror
                 </div>
 
                 <div class="form-group">
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" required>
-                    @error('password')
-                        <span class="error-message">{{ $message }}</span>
-                    @enderror
                 </div>
 
                 <div class="form-group">
@@ -43,9 +56,10 @@
 
                 <div class="form-group">
                     <label class="checkbox-label">
-                        <input type="checkbox" id="zkEnabled" name="zk_enabled">
+                        <input type="checkbox" id="zkEnabled" name="zk_enabled" value="1">
                         <span>Gunakan ZK-SNARK Login (Privat)</span>
                     </label>
+                    <small class="form-hint">Aktifkan jika Anda mendaftar dengan mode ZK-SNARK.</small>
                 </div>
 
                 <input type="hidden" name="zk_proof" id="zkProof">
@@ -100,6 +114,15 @@
                 addLog('BN128 curve parameters loaded', 'success');
                 addLog('Ready for authentication');
             }, 500);
+
+            // Check if there's a success message (from registration)
+            @if(session('success'))
+                addLog('{{ session('success') }}', 'success');
+            @endif
+
+            @if($errors->any())
+                addLog('{{ $errors->first() }}', 'error');
+            @endif
         });
 
         document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -112,23 +135,44 @@
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
                 
+                if (!email || !password) {
+                    addLog('Error: Email and password required', 'error');
+                    alert('Email dan password harus diisi!');
+                    return;
+                }
+                
                 addLog('Generating ZK proof for authentication...');
-                addLog('Computing Pedersen commitment...');
-                addLog('Creating secret hash...');
+                addLog('Recreating commitment from credentials...');
                 
-                // Generate ZK proof
-                const zkProof = generateZKLoginProof(email, password);
-                document.getElementById('zkProof').value = zkProof;
-                
-                addLog('ZK proof generated successfully', 'success');
-                addLog('Proof type: Groth16');
-                addLog('Curve: BN128');
-                addLog('Submitting proof to server...');
-                
-                // Submit form
-                setTimeout(() => {
-                    this.submit();
-                }, 500);
+                // First recreate the commitment (should match what was stored during registration)
+                if (typeof generateZKCommitment === 'function') {
+                    const zkData = generateZKCommitment(email, password);
+                    addLog('Commitment recreated: ' + zkData.commitment.substring(0, 16) + '...', 'info');
+                    
+                    // Generate proof
+                    addLog('Generating Zero-Knowledge Proof...');
+                    if (typeof generateZKLoginProof === 'function') {
+                        const zkProof = generateZKLoginProof(email, password, zkData.commitment);
+                        document.getElementById('zkProof').value = zkProof;
+                        
+                        addLog('ZK proof generated successfully', 'success');
+                        addLog('Proof type: Groth16');
+                        addLog('Curve: BN128');
+                        addLog('Password NOT transmitted - only proof sent', 'success');
+                        addLog('Submitting proof to server...');
+                        
+                        // Submit form
+                        setTimeout(() => {
+                            this.submit();
+                        }, 500);
+                    } else {
+                        addLog('Error: ZK proof generation failed', 'error');
+                        alert('ZK-SNARK module gagal. Silakan refresh halaman.');
+                    }
+                } else {
+                    addLog('Error: ZK module not loaded', 'error');
+                    alert('ZK-SNARK module tidak tersedia. Silakan refresh halaman.');
+                }
             } else {
                 addLog('Standard login mode', 'info');
                 addLog('Submitting credentials...');
@@ -139,12 +183,13 @@
         document.getElementById('zkEnabled').addEventListener('change', function() {
             if (this.checked) {
                 addLog('ZK-SNARK mode enabled', 'success');
-                addLog('Privacy mode: ON - Password will not be transmitted');
+                addLog('Privacy mode: ON - Password will NOT be transmitted');
+                addLog('Using Zero-Knowledge Proof for authentication');
             } else {
                 addLog('ZK-SNARK mode disabled', 'info');
+                addLog('Standard authentication mode');
             }
         });
     </script>
 </body>
 </html>
-

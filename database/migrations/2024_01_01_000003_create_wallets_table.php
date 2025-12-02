@@ -14,21 +14,33 @@ return new class extends Migration
         Schema::create('wallets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->unique()->constrained()->onDelete('cascade');
-            $table->string('wallet_address')->unique();
-            $table->string('public_key');
-            $table->text('encrypted_private_key');
-            $table->decimal('balance', 20, 8)->default(0);
-            $table->decimal('blockchain_balance', 20, 8)->default(0)->comment('Balance from blockchain');
-            $table->string('polygon_address')->nullable();
-            $table->text('zk_proof_commitment')->nullable(); // Commitment untuk zk-SNARK
-            $table->timestamp('last_blockchain_sync')->nullable()->comment('Last time balance was synced from blockchain');
-            $table->boolean('auto_sync_enabled')->default(true)->comment('Enable automatic balance sync');
+            
+            // Internal wallet address (for app reference only)
+            $table->string('wallet_address')->unique()->comment('Internal app reference: ZKWALLET...');
+            
+            // Blockchain wallet (real Polygon address)
+            $table->string('polygon_address', 42)->nullable()->unique()->comment('Real Polygon blockchain address: 0x...');
+            
+            // Cryptographic keys (encrypted)
+            $table->string('public_key')->comment('Uncompressed public key (130 hex chars)');
+            $table->text('encrypted_private_key')->comment('Encrypted private key');
+            
+            // Single balance - fetched from blockchain (no local manipulation)
+            $table->decimal('balance', 20, 18)->default(0)->comment('Balance in MATIC (synced from blockchain)');
+            
+            // ZK proof commitment for privacy
+            $table->text('zk_proof_commitment')->nullable();
+            
+            // Sync tracking
+            $table->timestamp('last_sync_at')->nullable()->comment('Last time balance was synced from blockchain');
+            $table->boolean('is_active')->default(true);
+            
             $table->timestamps();
 
             // Indexes for performance
             $table->index('wallet_address');
             $table->index('polygon_address');
-            $table->index(['user_id', 'balance']);
+            $table->index(['user_id', 'is_active']);
         });
     }
 
@@ -40,4 +52,3 @@ return new class extends Migration
         Schema::dropIfExists('wallets');
     }
 };
-

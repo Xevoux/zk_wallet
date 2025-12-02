@@ -1,0 +1,2047 @@
+/* ===================================
+   ZK Payment - Responsive Styles
+   Mendukung semua tampilan dan breakpoints
+   Disesuaikan dengan Models terbaru:
+   - User (ZK-SNARK auth)
+   - Wallet (Polygon integration)
+   - Transaction (ZK-SNARK privacy)
+   - TopUpTransaction (Midtrans)
+   - QRCode (P2P payments)
+   - ZKProof (verification)
+   =================================== */
+
+/* ===================================
+   CSS Variables - Responsive Scaling
+   =================================== */
+:root {
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    
+    --font-xs: 0.75rem;
+    --font-sm: 0.875rem;
+    --font-base: 1rem;
+    --font-lg: 1.125rem;
+    --font-xl: 1.25rem;
+    --font-2xl: 1.5rem;
+    --font-3xl: 2rem;
+    --font-4xl: 2.5rem;
+}
+
+/* ===================================
+   Mobile First Base Styles
+   =================================== */
+
+/* App Container */
+.app-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: var(--spacing-md);
+    max-width: 100%;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* ===================================
+   EXTRA SMALL DEVICES (< 480px)
+   Smartphones portrait mode
+   =================================== */
+@media (max-width: 479px) {
+    /* Base Typography */
+    body {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    /* Navbar */
+    .navbar {
+        padding: var(--spacing-sm);
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .navbar-brand h2 {
+        font-size: 1rem;
+    }
+
+    .navbar-brand h2 i {
+        font-size: 1.25rem;
+    }
+
+    .navbar-menu {
+        width: 100%;
+        justify-content: center;
+        gap: var(--spacing-xs);
+        flex-wrap: wrap;
+        padding: var(--spacing-xs) 0;
+    }
+
+    .nav-link {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: 0.75rem;
+        border-radius: 6px;
+    }
+
+    .nav-link span {
+        display: none;
+    }
+
+    .nav-link i {
+        font-size: 1rem;
+    }
+
+    .navbar-user {
+        width: 100%;
+    }
+
+    /* Profile Dropdown */
+    .profile-trigger {
+        width: 100%;
+        padding: var(--spacing-sm);
+    }
+
+    .profile-avatar {
+        font-size: 1.5rem;
+    }
+
+    .profile-name {
+        font-size: 0.8rem;
+    }
+
+    .profile-email {
+        display: none;
+    }
+
+    .profile-menu {
+        left: 5%;
+        right: 5%;
+        min-width: auto;
+        width: 90%;
+    }
+
+    .profile-menu-avatar {
+        font-size: 2rem;
+    }
+
+    .profile-menu-info strong {
+        font-size: 0.85rem;
+    }
+
+    .profile-menu-info span {
+        font-size: 0.7rem;
+    }
+
+    /* Auth Pages */
+    .auth-body {
+        padding: var(--spacing-sm);
+    }
+
+    .auth-container {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+
+    .auth-card {
+        padding: var(--spacing-md);
+        border-radius: 12px;
+    }
+
+    .auth-header h1 {
+        font-size: 1.25rem;
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+
+    .auth-header p {
+        font-size: 0.8rem;
+    }
+
+    .auth-form {
+        gap: var(--spacing-md);
+    }
+
+    .form-group label {
+        font-size: 0.8rem;
+    }
+
+    .form-group input {
+        padding: 0.625rem 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .form-hint {
+        font-size: 0.7rem;
+    }
+
+    .checkbox-label {
+        font-size: 0.8rem;
+    }
+
+    .btn {
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .auth-footer {
+        font-size: 0.8rem;
+    }
+
+    /* Process Logs */
+    .process-logs,
+    .process-logs-sidebar,
+    .process-logs-scan {
+        padding: var(--spacing-md);
+        border-radius: 12px;
+    }
+
+    .process-logs h3 {
+        font-size: 0.9rem;
+    }
+
+    .logs-container {
+        max-height: 200px;
+        padding: var(--spacing-sm);
+        font-size: 0.7rem;
+    }
+
+    .log-entry {
+        padding: var(--spacing-xs);
+    }
+
+    .log-time {
+        font-size: 0.65rem;
+    }
+
+    /* Dashboard */
+    .dashboard-container {
+        gap: var(--spacing-md);
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .dashboard-header p {
+        font-size: 0.8rem;
+    }
+
+    /* Wallet Card */
+    .wallet-card {
+        padding: var(--spacing-md);
+        border-radius: 12px;
+    }
+
+    .wallet-header {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        align-items: flex-start;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .wallet-header h2 {
+        font-size: 1.1rem;
+    }
+
+    /* Wallet Balance */
+    .wallet-balance {
+        padding: var(--spacing-md);
+        border-radius: 10px;
+        margin: var(--spacing-md) 0;
+    }
+
+    .balance-label {
+        font-size: 0.8rem;
+    }
+
+    .balance-amount {
+        font-size: 1.5rem !important;
+    }
+
+    /* Wallet Info */
+    .wallet-info {
+        gap: var(--spacing-md);
+        margin: var(--spacing-md) 0;
+    }
+
+    .info-item label {
+        font-size: 0.75rem;
+    }
+
+    .wallet-address {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .wallet-address code {
+        width: 100%;
+        padding: var(--spacing-sm);
+        font-size: 0.7rem;
+        word-break: break-all;
+    }
+
+    .btn-copy {
+        padding: var(--spacing-sm);
+        width: 100%;
+    }
+
+    /* Wallet Actions */
+    .wallet-actions {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+        margin-top: var(--spacing-md);
+    }
+
+    .wallet-actions .btn {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    /* Transactions */
+    .transactions-card {
+        padding: var(--spacing-md);
+        border-radius: 12px;
+    }
+
+    .card-header {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        align-items: flex-start;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .card-header h2 {
+        font-size: 1.1rem;
+    }
+
+    .transactions-list {
+        gap: var(--spacing-sm);
+    }
+
+    .transaction-item {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-md);
+    }
+
+    .transaction-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+
+    .transaction-type {
+        font-size: 0.85rem;
+    }
+
+    .transaction-date {
+        font-size: 0.7rem;
+    }
+
+    .transaction-amount {
+        font-size: 1rem;
+    }
+
+    /* Info Cards */
+    .info-cards {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+
+    .info-card {
+        padding: var(--spacing-md);
+        border-radius: 12px;
+    }
+
+    .info-icon {
+        font-size: 2rem;
+    }
+
+    .info-card h3 {
+        font-size: 1rem;
+    }
+
+    .info-card p {
+        font-size: 0.8rem;
+    }
+
+    /* Payment Pages */
+    .payment-container,
+    .scan-container,
+    .history-container {
+        gap: var(--spacing-md);
+    }
+
+    .payment-header h1,
+    .scan-header h1,
+    .history-header h1 {
+        font-size: 1.5rem;
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+
+    .payment-header p,
+    .scan-header p,
+    .history-header p {
+        font-size: 0.8rem;
+    }
+
+    .payment-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+
+    .payment-card {
+        padding: var(--spacing-md);
+        border-radius: 12px;
+    }
+
+    .payment-card h2 {
+        font-size: 1.1rem;
+        margin-bottom: var(--spacing-md);
+    }
+
+    /* Payment Tabs */
+    .payment-tabs {
+        gap: 0;
+        flex-direction: column;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .tab-btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.85rem;
+        border-bottom-width: 2px;
+    }
+
+    /* QR Code */
+    .qr-code-container {
+        padding: var(--spacing-md);
+    }
+
+    .qr-code-container img,
+    .qr-image {
+        max-width: 180px !important;
+    }
+
+    .qr-instruction {
+        font-size: 0.8rem;
+    }
+
+    /* Scanner */
+    .scan-content {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+
+    .scanner-card {
+        padding: var(--spacing-md);
+        border-radius: 12px;
+    }
+
+    .scanner-wrapper {
+        padding: var(--spacing-md);
+        min-height: 280px;
+    }
+
+    #reader {
+        max-width: 100%;
+    }
+
+    .scanner-actions {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    /* Payment Confirmation */
+    .payment-confirmation {
+        padding: var(--spacing-md);
+        border-radius: 12px;
+    }
+
+    .payment-confirmation h2 {
+        font-size: 1.1rem;
+    }
+
+    .confirmation-details {
+        padding: var(--spacing-md);
+    }
+
+    .detail-row {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+        padding: var(--spacing-sm) 0;
+    }
+
+    .detail-row label {
+        font-size: 0.75rem;
+    }
+
+    .detail-row span {
+        font-size: 0.85rem;
+    }
+
+    .amount-highlight {
+        font-size: 1.1rem !important;
+    }
+
+    .confirmation-actions {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    /* History */
+    .history-filters {
+        flex-direction: column;
+        gap: var(--spacing-md);
+        padding: var(--spacing-md);
+        border-radius: 12px;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+
+    .filter-group label {
+        font-size: 0.8rem;
+    }
+
+    .filter-group select {
+        font-size: 0.85rem;
+    }
+
+    .transactions-table-card {
+        padding: var(--spacing-sm);
+        border-radius: 12px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .transactions-table {
+        min-width: 700px;
+        font-size: 0.75rem;
+    }
+
+    .transactions-table th,
+    .transactions-table td {
+        padding: var(--spacing-sm);
+    }
+
+    .wallet-code {
+        font-size: 0.65rem;
+        padding: 0.125rem 0.25rem;
+    }
+
+    /* Modal */
+    .modal-content {
+        width: 95%;
+        margin: var(--spacing-sm);
+        border-radius: 12px;
+    }
+
+    .modal-header {
+        padding: var(--spacing-md);
+    }
+
+    .modal-header h2 {
+        font-size: 1rem;
+    }
+
+    .modal-close {
+        font-size: 1.5rem;
+    }
+
+    .modal-body {
+        padding: var(--spacing-md);
+    }
+
+    .modal-actions {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    /* Settings */
+    .settings-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+        padding: var(--spacing-md);
+    }
+
+    .settings-item-info strong {
+        font-size: 0.85rem;
+    }
+
+    .settings-item-info span {
+        font-size: 0.75rem;
+    }
+
+    .settings-avatar-large {
+        font-size: 3rem;
+    }
+
+    .profile-settings-info {
+        padding: var(--spacing-md);
+    }
+
+    /* About Modal */
+    .about-content h3 {
+        font-size: 1.25rem;
+    }
+
+    .about-tagline {
+        font-size: 0.85rem;
+    }
+
+    .about-features {
+        padding: var(--spacing-md);
+    }
+
+    .about-features ul li {
+        font-size: 0.8rem;
+    }
+
+    .tech-badges {
+        justify-content: center;
+    }
+
+    .tech-badge {
+        font-size: 0.75rem;
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+
+    /* Wallet Page */
+    .wallet-container {
+        padding: var(--spacing-md);
+    }
+
+    .wallet-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .wallet-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+
+    .wallet-info-card,
+    .qr-code-card,
+    .faucet-card,
+    .logs-card {
+        padding: var(--spacing-md);
+        border-radius: 12px;
+        grid-column: span 1 !important;
+    }
+
+    .wallet-info-card h2,
+    .qr-code-card h2,
+    .faucet-card h2 {
+        font-size: 1.1rem;
+    }
+
+    .wallet-detail label {
+        font-size: 0.8rem;
+    }
+
+    .balance-display {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+    }
+
+    .balance-display .balance-amount {
+        font-size: 1.5rem;
+    }
+
+    .address-field {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .address-field code {
+        width: 100%;
+        font-size: 0.75rem;
+    }
+
+    .btn-toggle {
+        width: 100%;
+        height: 36px;
+    }
+
+    /* Faucet Card */
+    .faucet-subtitle {
+        font-size: 0.8rem;
+    }
+
+    .faucet-info-box {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+    }
+
+    .faucet-stat {
+        padding: var(--spacing-sm);
+    }
+
+    .faucet-stat i {
+        font-size: 1.5rem;
+    }
+
+    .faucet-note {
+        padding: var(--spacing-md);
+        font-size: 0.8rem;
+    }
+
+    /* QR Generator */
+    .qr-generator {
+        padding: var(--spacing-md);
+    }
+
+    .qr-generator h3 {
+        font-size: 1rem;
+    }
+
+    .qr-actions {
+        gap: var(--spacing-sm);
+    }
+
+    .qr-info {
+        padding: var(--spacing-md);
+        font-size: 0.8rem;
+    }
+
+    /* Topup Page (Tailwind override) */
+    .container.mx-auto {
+        padding-left: var(--spacing-md) !important;
+        padding-right: var(--spacing-md) !important;
+    }
+
+    .max-w-4xl {
+        max-width: 100% !important;
+    }
+
+    .grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .lg\\:col-span-2,
+    .lg\\:col-span-1 {
+        grid-column: span 1 !important;
+    }
+
+    .grid.grid-cols-1.lg\\:grid-cols-3 {
+        gap: var(--spacing-md) !important;
+    }
+
+    .rounded-xl {
+        border-radius: 12px !important;
+    }
+
+    .p-6 {
+        padding: var(--spacing-md) !important;
+    }
+
+    .text-3xl {
+        font-size: 1.5rem !important;
+    }
+
+    /* Footer */
+    .footer {
+        padding: var(--spacing-md);
+        font-size: 0.75rem;
+    }
+
+    /* Badges */
+    .badge {
+        font-size: 0.7rem;
+        padding: 0.125rem 0.5rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        padding: var(--spacing-xl);
+    }
+
+    .empty-state p {
+        font-size: 0.85rem;
+    }
+
+    /* Alerts */
+    .alert {
+        padding: var(--spacing-md);
+        font-size: 0.85rem;
+        border-radius: 8px;
+    }
+}
+
+/* ===================================
+   SMALL DEVICES (480px - 639px)
+   Smartphones landscape / large phones
+   =================================== */
+@media (min-width: 480px) and (max-width: 639px) {
+    /* Navbar */
+    .navbar {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .navbar-brand h2 {
+        font-size: 1.1rem;
+    }
+
+    .nav-link {
+        font-size: 0.8rem;
+    }
+
+    .nav-link span {
+        display: inline;
+    }
+
+    /* Auth */
+    .auth-card {
+        padding: var(--spacing-lg);
+    }
+
+    .auth-header h1 {
+        font-size: 1.5rem;
+    }
+
+    /* Dashboard */
+    .dashboard-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .balance-amount {
+        font-size: 1.75rem !important;
+    }
+
+    /* Wallet Actions */
+    .wallet-actions {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Transaction Item */
+    .transaction-item {
+        grid-template-columns: auto 1fr auto;
+    }
+
+    .transaction-status {
+        display: none;
+    }
+
+    /* Payment Tabs */
+    .payment-tabs {
+        flex-direction: row;
+    }
+
+    /* QR Code */
+    .qr-code-container img,
+    .qr-image {
+        max-width: 200px !important;
+    }
+
+    /* Modal */
+    .modal-content {
+        width: 90%;
+    }
+
+    .modal-actions {
+        flex-direction: row;
+    }
+
+    /* Wallet Grid */
+    .wallet-grid {
+        gap: var(--spacing-lg);
+    }
+
+    /* Faucet */
+    .faucet-info-box {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Topup Grid */
+    .grid-cols-3 {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+/* ===================================
+   MEDIUM DEVICES (640px - 767px)
+   Small tablets / phablets
+   =================================== */
+@media (min-width: 640px) and (max-width: 767px) {
+    .main-content {
+        padding: var(--spacing-lg);
+    }
+
+    /* Navbar */
+    .navbar {
+        padding: var(--spacing-md) var(--spacing-lg);
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .navbar-brand h2 {
+        font-size: 1.25rem;
+    }
+
+    .navbar-menu {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .nav-link span {
+        display: inline;
+    }
+
+    /* Profile */
+    .profile-email {
+        display: block;
+    }
+
+    /* Auth */
+    .auth-card {
+        padding: var(--spacing-xl);
+    }
+
+    .auth-header h1 {
+        font-size: 1.75rem;
+    }
+
+    /* Dashboard */
+    .dashboard-header h1 {
+        font-size: 2rem;
+    }
+
+    .balance-amount {
+        font-size: 2rem !important;
+    }
+
+    /* Wallet Actions */
+    .wallet-actions {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Transaction */
+    .transaction-item {
+        grid-template-columns: auto 1fr auto auto;
+    }
+
+    .transaction-status {
+        display: flex;
+    }
+
+    /* Info Cards */
+    .info-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Payment Grid */
+    .payment-grid {
+        gap: var(--spacing-lg);
+    }
+
+    /* Scanner */
+    .scanner-actions {
+        flex-direction: row;
+    }
+
+    /* Confirmation */
+    .detail-row {
+        flex-direction: row;
+    }
+
+    .confirmation-actions {
+        flex-direction: row;
+    }
+
+    /* History */
+    .history-filters {
+        flex-direction: row;
+    }
+
+    /* Wallet Grid */
+    .wallet-info-card {
+        grid-column: span 2 !important;
+    }
+
+    /* Modal */
+    .modal-content {
+        width: 85%;
+        max-width: 500px;
+    }
+
+    .settings-item {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+/* ===================================
+   TABLET DEVICES (768px - 1023px)
+   iPads, tablets portrait & landscape
+   =================================== */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .main-content {
+        padding: var(--spacing-xl);
+    }
+
+    /* Navbar */
+    .navbar {
+        flex-direction: row;
+        padding: var(--spacing-md) var(--spacing-xl);
+    }
+
+    .navbar-menu {
+        order: 0;
+        width: auto;
+    }
+
+    .navbar-brand h2 {
+        font-size: 1.35rem;
+    }
+
+    .nav-link {
+        padding: 0.5rem 1rem;
+    }
+
+    /* Auth */
+    .auth-container {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .auth-card {
+        padding: var(--spacing-2xl);
+    }
+
+    .auth-header h1 {
+        font-size: 1.85rem;
+    }
+
+    /* Dashboard */
+    .dashboard-header h1 {
+        font-size: 2.25rem;
+    }
+
+    .balance-amount {
+        font-size: 2.5rem !important;
+    }
+
+    /* Wallet Card */
+    .wallet-card {
+        padding: var(--spacing-xl);
+    }
+
+    .wallet-actions {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Transactions */
+    .transactions-card {
+        padding: var(--spacing-xl);
+    }
+
+    /* Info Cards */
+    .info-cards {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Payment Grid */
+    .payment-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-card {
+        padding: var(--spacing-xl);
+    }
+
+    /* Scan Content */
+    .scan-content {
+        grid-template-columns: 1fr;
+    }
+
+    /* Wallet Page Grid */
+    .wallet-container {
+        padding: var(--spacing-xl);
+    }
+
+    .wallet-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .wallet-info-card {
+        grid-column: span 2;
+    }
+
+    .logs-card {
+        grid-column: span 2;
+    }
+
+    /* Process Logs */
+    .process-logs,
+    .process-logs-sidebar,
+    .process-logs-scan {
+        padding: var(--spacing-lg);
+    }
+
+    .logs-container {
+        max-height: 300px;
+    }
+
+    /* Modal */
+    .modal-content {
+        width: 80%;
+        max-width: 550px;
+    }
+
+    /* Topup */
+    .lg\\:col-span-2 {
+        grid-column: span 2 !important;
+    }
+
+    .lg\\:col-span-1 {
+        grid-column: span 1 !important;
+    }
+}
+
+/* ===================================
+   LARGE DEVICES (1024px - 1199px)
+   Laptops, small desktops
+   =================================== */
+@media (min-width: 1024px) and (max-width: 1199px) {
+    .main-content {
+        padding: var(--spacing-xl);
+        max-width: 1200px;
+    }
+
+    /* Navbar */
+    .navbar {
+        padding: var(--spacing-md) var(--spacing-2xl);
+    }
+
+    /* Auth */
+    .auth-container {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-xl);
+        max-width: 1000px;
+    }
+
+    /* Dashboard */
+    .dashboard-header h1 {
+        font-size: 2.35rem;
+    }
+
+    .balance-amount {
+        font-size: 2.75rem !important;
+    }
+
+    /* Wallet Actions */
+    .wallet-actions {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Payment Grid */
+    .payment-grid {
+        grid-template-columns: 2fr 1fr;
+    }
+
+    /* Scan Content */
+    .scan-content {
+        grid-template-columns: 1.5fr 1fr;
+    }
+
+    /* Wallet Grid */
+    .wallet-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .wallet-info-card {
+        grid-column: span 2;
+    }
+
+    .logs-card {
+        grid-column: span 2;
+    }
+
+    /* Modal */
+    .modal-content {
+        max-width: 580px;
+    }
+}
+
+/* ===================================
+   EXTRA LARGE DEVICES (1200px - 1399px)
+   Desktops, large monitors
+   =================================== */
+@media (min-width: 1200px) and (max-width: 1399px) {
+    .main-content {
+        padding: var(--spacing-2xl);
+        max-width: 1320px;
+    }
+
+    /* Navbar */
+    .navbar {
+        padding: var(--spacing-lg) var(--spacing-2xl);
+    }
+
+    .navbar-brand h2 {
+        font-size: 1.5rem;
+    }
+
+    /* Auth */
+    .auth-container {
+        gap: var(--spacing-2xl);
+        max-width: 1100px;
+    }
+
+    .auth-card {
+        padding: var(--spacing-2xl);
+    }
+
+    .auth-header h1 {
+        font-size: 2rem;
+    }
+
+    /* Dashboard */
+    .dashboard-header h1 {
+        font-size: 2.5rem;
+    }
+
+    .balance-amount {
+        font-size: 3rem !important;
+    }
+
+    /* Wallet Card */
+    .wallet-card {
+        padding: var(--spacing-2xl);
+    }
+
+    /* Info Cards */
+    .info-cards {
+        gap: var(--spacing-xl);
+    }
+
+    .info-card {
+        padding: var(--spacing-xl);
+    }
+
+    /* Payment */
+    .payment-grid {
+        gap: var(--spacing-xl);
+    }
+
+    /* Wallet Grid */
+    .wallet-grid {
+        gap: var(--spacing-xl);
+    }
+
+    /* Modal */
+    .modal-content {
+        max-width: 600px;
+    }
+}
+
+/* ===================================
+   2XL DEVICES (1400px+)
+   Large desktops, wide monitors
+   =================================== */
+@media (min-width: 1400px) {
+    .main-content {
+        padding: var(--spacing-2xl);
+        max-width: 1400px;
+    }
+
+    /* Navbar */
+    .navbar {
+        padding: var(--spacing-lg) var(--spacing-2xl);
+    }
+
+    /* Auth */
+    .auth-container {
+        max-width: 1200px;
+    }
+
+    .auth-card {
+        padding: 3rem;
+    }
+
+    /* Dashboard */
+    .dashboard-header h1 {
+        font-size: 2.5rem;
+    }
+
+    /* All Cards */
+    .wallet-card,
+    .transactions-card,
+    .payment-card,
+    .scanner-card,
+    .payment-confirmation,
+    .wallet-info-card,
+    .qr-code-card,
+    .faucet-card,
+    .logs-card {
+        border-radius: 20px;
+    }
+}
+
+/* ===================================
+   LANDSCAPE ORIENTATION
+   Special handling for landscape mode
+   =================================== */
+@media (max-height: 500px) and (orientation: landscape) {
+    /* Reduce vertical spacing */
+    .auth-body {
+        padding: var(--spacing-sm);
+        align-items: flex-start;
+        overflow-y: auto;
+    }
+
+    .auth-card {
+        padding: var(--spacing-md);
+    }
+
+    .auth-header {
+        margin-bottom: var(--spacing-md);
+    }
+
+    .auth-header h1 {
+        font-size: 1.25rem;
+    }
+
+    .auth-form {
+        gap: var(--spacing-sm);
+    }
+
+    .form-group input {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .process-logs {
+        max-height: 50vh;
+        overflow-y: auto;
+    }
+
+    .logs-container {
+        max-height: 150px;
+    }
+
+    /* Scanner */
+    .scanner-wrapper {
+        min-height: 200px;
+    }
+
+    /* Modal */
+    .modal-content {
+        max-height: 95vh;
+    }
+
+    .modal-body {
+        max-height: calc(95vh - 80px);
+        overflow-y: auto;
+    }
+}
+
+/* ===================================
+   PRINT STYLES
+   For printing transactions/receipts
+   =================================== */
+@media print {
+    /* Hide non-essential elements */
+    .navbar,
+    .footer,
+    .wallet-actions,
+    .process-logs,
+    .process-logs-sidebar,
+    .process-logs-scan,
+    .scanner-actions,
+    .confirmation-actions,
+    .history-filters,
+    .btn,
+    .modal {
+        display: none !important;
+    }
+
+    /* Reset backgrounds */
+    body {
+        background: white;
+        color: black;
+    }
+
+    .main-content {
+        padding: 0;
+        max-width: 100%;
+    }
+
+    .wallet-card,
+    .transactions-card,
+    .payment-card,
+    .wallet-info-card {
+        background: white;
+        box-shadow: none;
+        border: 1px solid #ddd;
+        break-inside: avoid;
+    }
+
+    .balance-amount {
+        color: black !important;
+    }
+
+    .wallet-address code {
+        background: #f5f5f5;
+        color: black;
+    }
+
+    .transactions-table {
+        font-size: 10pt;
+    }
+
+    .transactions-table th,
+    .transactions-table td {
+        border: 1px solid #ddd;
+    }
+
+    .badge {
+        border: 1px solid currentColor;
+        background: transparent !important;
+    }
+}
+
+/* ===================================
+   ACCESSIBILITY - REDUCED MOTION
+   For users who prefer reduced motion
+   =================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .log-entry {
+        animation: none;
+    }
+}
+
+/* ===================================
+   HIGH CONTRAST MODE
+   For users who prefer high contrast
+   =================================== */
+@media (prefers-contrast: high) {
+    :root {
+        --border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .btn {
+        border: 2px solid currentColor;
+    }
+
+    .wallet-card,
+    .transactions-card,
+    .payment-card,
+    .auth-card,
+    .info-card,
+    .modal-content {
+        border-width: 2px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        border-width: 2px;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+        outline: 2px solid currentColor;
+    }
+}
+
+/* ===================================
+   DARK MODE PREFERENCE
+   Keep dark theme but enhance for system preference
+   =================================== */
+@media (prefers-color-scheme: dark) {
+    /* Already using dark theme, just ensure consistency */
+    :root {
+        color-scheme: dark;
+    }
+}
+
+/* ===================================
+   TOUCH DEVICE OPTIMIZATIONS
+   Enhance touch targets for mobile
+   =================================== */
+@media (hover: none) and (pointer: coarse) {
+    /* Larger touch targets */
+    .btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    .nav-link {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+
+    .checkbox-label {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+        width: 22px;
+        height: 22px;
+    }
+
+    .btn-icon {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .btn-copy {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .tab-btn {
+        min-height: 48px;
+    }
+
+    .filter-group select {
+        min-height: 44px;
+    }
+
+    /* Remove hover effects that don't work well on touch */
+    .transaction-item:hover,
+    .info-card:hover,
+    .auth-card:hover,
+    .btn:hover {
+        transform: none;
+    }
+
+    /* Add active state for touch feedback */
+    .btn:active {
+        transform: scale(0.98);
+        opacity: 0.9;
+    }
+
+    .transaction-item:active {
+        background: rgba(124, 58, 237, 0.15);
+    }
+}
+
+/* ===================================
+   SAFE AREA INSETS
+   For devices with notches (iPhone X+, etc.)
+   =================================== */
+@supports (padding: env(safe-area-inset-top)) {
+    .navbar {
+        padding-top: max(var(--spacing-md), env(safe-area-inset-top));
+        padding-left: max(var(--spacing-lg), env(safe-area-inset-left));
+        padding-right: max(var(--spacing-lg), env(safe-area-inset-right));
+    }
+
+    .footer {
+        padding-bottom: max(var(--spacing-xl), env(safe-area-inset-bottom));
+        padding-left: max(var(--spacing-lg), env(safe-area-inset-left));
+        padding-right: max(var(--spacing-lg), env(safe-area-inset-right));
+    }
+
+    .main-content {
+        padding-left: max(var(--spacing-md), env(safe-area-inset-left));
+        padding-right: max(var(--spacing-md), env(safe-area-inset-right));
+    }
+
+    .modal-content {
+        padding-bottom: max(var(--spacing-xl), env(safe-area-inset-bottom));
+    }
+}
+
+/* ===================================
+   TOPUP PAGE STYLES
+   Override Tailwind classes to match ZK Payment theme
+   =================================== */
+
+/* Topup Container */
+.container.mx-auto.px-4.py-8 {
+    background: transparent !important;
+    max-width: 1200px !important;
+    padding: var(--spacing-lg) !important;
+}
+
+.max-w-4xl.mx-auto {
+    background: transparent !important;
+}
+
+/* Topup Header */
+.container .mb-8 h1.text-3xl {
+    color: var(--light-text) !important;
+    font-size: 2rem !important;
+}
+
+.container .mb-8 p.text-gray-600 {
+    color: var(--text-muted) !important;
+}
+
+/* Alert Box */
+.p-4.bg-blue-50 {
+    background: rgba(96, 165, 250, 0.1) !important;
+    border-color: rgba(96, 165, 250, 0.3) !important;
+    border-radius: 12px !important;
+}
+
+.p-4.bg-blue-50 p.text-blue-800 {
+    color: var(--info-color) !important;
+}
+
+/* Balance Card Gradient */
+.bg-gradient-to-br.from-purple-600.to-blue-600 {
+    background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple)) !important;
+    border-radius: 16px !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: var(--glow-purple) !important;
+}
+
+.text-purple-100 {
+    color: rgba(233, 213, 255, 0.9) !important;
+}
+
+/* Sync Button */
+.bg-white.bg-opacity-20 {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-radius: 10px !important;
+}
+
+.bg-white.bg-opacity-20:hover,
+.hover\\:bg-opacity-30:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Main Cards */
+.bg-white.rounded-xl.shadow-lg {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 16px !important;
+    box-shadow: var(--shadow-lg) !important;
+}
+
+.bg-white.rounded-xl.shadow-lg h3 {
+    color: var(--light-text) !important;
+}
+
+/* Quick Amount Buttons */
+.p-4.border-2.border-gray-300 {
+    background: rgba(124, 58, 237, 0.05) !important;
+    border-color: var(--border-color) !important;
+    border-radius: 12px !important;
+    transition: all 0.3s ease !important;
+}
+
+.p-4.border-2.border-gray-300:hover,
+.hover\\:border-purple-500:hover {
+    border-color: var(--primary-purple) !important;
+    background: rgba(124, 58, 237, 0.1) !important;
+    box-shadow: var(--glow-purple) !important;
+}
+
+.p-4.border-2 p.text-lg {
+    color: var(--light-text) !important;
+}
+
+.p-4.border-2 p.text-xs.text-gray-500 {
+    color: var(--text-muted) !important;
+}
+
+/* Input Fields */
+.border.border-gray-300.rounded-lg,
+.w-full.pl-12.pr-4.py-3 {
+    background: rgba(124, 58, 237, 0.05) !important;
+    border-color: var(--border-color) !important;
+    color: var(--light-text) !important;
+    border-radius: 10px !important;
+}
+
+.border.border-gray-300.rounded-lg:focus,
+.focus\\:ring-2:focus {
+    border-color: var(--primary-purple) !important;
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15) !important;
+    outline: none !important;
+}
+
+.absolute.left-3.text-gray-500 {
+    color: var(--text-muted) !important;
+}
+
+.text-xs.text-gray-500.mt-1,
+.text-sm.text-gray-600 {
+    color: var(--text-muted) !important;
+}
+
+.block.text-sm.font-medium.text-gray-700 {
+    color: var(--text-secondary) !important;
+}
+
+/* Conversion Preview */
+.bg-blue-50.border.border-blue-200 {
+    background: rgba(124, 58, 237, 0.08) !important;
+    border-color: var(--border-color) !important;
+    border-radius: 12px !important;
+}
+
+.text-sm.font-semibold {
+    color: var(--light-text) !important;
+}
+
+.text-lg.font-bold.text-purple-600 {
+    color: var(--primary-purple) !important;
+}
+
+.border-t.border-blue-300 {
+    border-color: var(--border-color) !important;
+}
+
+/* Top-Up Button */
+.bg-gradient-to-r.from-purple-600.to-blue-600 {
+    background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple)) !important;
+    border-radius: 12px !important;
+    transition: all 0.3s ease !important;
+}
+
+.bg-gradient-to-r.from-purple-600.to-blue-600:hover,
+.hover\\:from-purple-700:hover {
+    background: linear-gradient(135deg, var(--secondary-purple), var(--dark-purple)) !important;
+    box-shadow: var(--glow-purple) !important;
+    transform: translateY(-2px) !important;
+}
+
+.bg-gradient-to-r.from-purple-600.to-blue-600:disabled,
+.disabled\\:opacity-50:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+}
+
+/* How It Works */
+.text-lg.font-semibold.mb-4 {
+    color: var(--light-text) !important;
+}
+
+.text-purple-600.w-5.h-5 {
+    color: var(--primary-purple) !important;
+}
+
+.space-y-3.text-sm.text-gray-600 li {
+    color: var(--text-secondary) !important;
+}
+
+.bg-purple-100.text-purple-600 {
+    background: rgba(124, 58, 237, 0.2) !important;
+    color: var(--primary-purple) !important;
+}
+
+/* Payment Methods */
+.p-2.border.border-gray-200.rounded {
+    background: rgba(124, 58, 237, 0.05) !important;
+    border-color: var(--border-color) !important;
+    border-radius: 8px !important;
+}
+
+.p-2.border.border-gray-200.rounded p {
+    color: var(--text-secondary) !important;
+}
+
+/* Recent Top-ups */
+.border-l-4.pl-3.py-2 {
+    background: rgba(124, 58, 237, 0.03) !important;
+    border-radius: 0 8px 8px 0 !important;
+}
+
+.border-green-500 {
+    border-left-color: var(--success-color) !important;
+}
+
+.border-yellow-500 {
+    border-left-color: var(--warning-color) !important;
+}
+
+.border-red-500 {
+    border-left-color: var(--danger-color) !important;
+}
+
+.text-sm.font-medium {
+    color: var(--light-text) !important;
+}
+
+.text-xs.text-gray-500,
+.text-xs.text-gray-600 {
+    color: var(--text-muted) !important;
+}
+
+/* Status Badges */
+.bg-green-100.text-green-700 {
+    background: rgba(16, 185, 129, 0.2) !important;
+    color: #6ee7b7 !important;
+}
+
+.bg-yellow-100.text-yellow-700 {
+    background: rgba(245, 158, 11, 0.2) !important;
+    color: #fcd34d !important;
+}
+
+.bg-red-100.text-red-700 {
+    background: rgba(239, 68, 68, 0.2) !important;
+    color: #fca5a5 !important;
+}
+
+/* Responsive Topup Grid */
+@media (max-width: 767px) {
+    .container.mx-auto.px-4.py-8 {
+        padding: var(--spacing-md) !important;
+    }
+
+    .container .mb-8 h1.text-3xl {
+        font-size: 1.5rem !important;
+    }
+
+    .grid.grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .lg\\:col-span-2 {
+        grid-column: span 1 !important;
+    }
+
+    .lg\\:col-span-1 {
+        grid-column: span 1 !important;
+    }
+
+    .grid.grid-cols-1.lg\\:grid-cols-3 {
+        grid-template-columns: 1fr !important;
+        gap: var(--spacing-md) !important;
+    }
+
+    .bg-gradient-to-br.from-purple-600.to-blue-600 h2.text-3xl {
+        font-size: 1.5rem !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .grid.grid-cols-1.lg\\:grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .lg\\:col-span-2 {
+        grid-column: span 2 !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid.grid-cols-1.lg\\:grid-cols-3 {
+        grid-template-columns: 2fr 1fr !important;
+    }
+
+    .lg\\:col-span-2 {
+        grid-column: span 1 !important;
+    }
+
+    .lg\\:col-span-1 {
+        grid-column: span 1 !important;
+    }
+}
+
+/* ===================================
+   UTILITY CLASSES - RESPONSIVE HELPERS
+   =================================== */
+
+/* Hide on specific breakpoints */
+.hide-xs {
+    display: none !important;
+}
+
+@media (min-width: 480px) {
+    .hide-xs {
+        display: block !important;
+    }
+    .hide-sm {
+        display: none !important;
+    }
+}
+
+@media (min-width: 640px) {
+    .hide-sm {
+        display: block !important;
+    }
+    .hide-md {
+        display: none !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .hide-md {
+        display: block !important;
+    }
+    .hide-tablet {
+        display: none !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .hide-tablet {
+        display: block !important;
+    }
+    .hide-lg {
+        display: none !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .hide-lg {
+        display: block !important;
+    }
+}
+
+/* Show only on specific breakpoints */
+.show-xs-only {
+    display: block !important;
+}
+
+@media (min-width: 480px) {
+    .show-xs-only {
+        display: none !important;
+    }
+}
+
+.show-mobile-only {
+    display: block !important;
+}
+
+@media (min-width: 768px) {
+    .show-mobile-only {
+        display: none !important;
+    }
+}
+
+.show-tablet-only {
+    display: none !important;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .show-tablet-only {
+        display: block !important;
+    }
+}
+
+.show-desktop-only {
+    display: none !important;
+}
+
+@media (min-width: 1024px) {
+    .show-desktop-only {
+        display: block !important;
+    }
+}
+
+/* Text alignment responsive */
+.text-center-mobile {
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .text-center-mobile {
+        text-align: left;
+    }
+}
+
+/* Stack on mobile */
+.stack-mobile {
+    flex-direction: column;
+}
+
+@media (min-width: 768px) {
+    .stack-mobile {
+        flex-direction: row;
+    }
+}
+
+/* Full width on mobile */
+.full-width-mobile {
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .full-width-mobile {
+        width: auto;
+    }
+}
+
+/* Responsive spacing utilities */
+.py-responsive {
+    padding-top: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+}
+
+@media (min-width: 768px) {
+    .py-responsive {
+        padding-top: var(--spacing-xl);
+        padding-bottom: var(--spacing-xl);
+    }
+}
+
+@media (min-width: 1024px) {
+    .py-responsive {
+        padding-top: var(--spacing-2xl);
+        padding-bottom: var(--spacing-2xl);
+    }
+}
+
+.px-responsive {
+    padding-left: var(--spacing-md);
+    padding-right: var(--spacing-md);
+}
+
+@media (min-width: 768px) {
+    .px-responsive {
+        padding-left: var(--spacing-xl);
+        padding-right: var(--spacing-xl);
+    }
+}
+
+@media (min-width: 1024px) {
+    .px-responsive {
+        padding-left: var(--spacing-2xl);
+        padding-right: var(--spacing-2xl);
+    }
+}
+
+/* Responsive gap utilities */
+.gap-responsive {
+    gap: var(--spacing-md);
+}
+
+@media (min-width: 768px) {
+    .gap-responsive {
+        gap: var(--spacing-lg);
+    }
+}
+
+@media (min-width: 1024px) {
+    .gap-responsive {
+        gap: var(--spacing-xl);
+    }
+}
+

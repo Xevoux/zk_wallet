@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'ZK Payment - Pembayaran Digital Privat')</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/responsive.css') }}">
     @stack('styles')
 </head>
 <body>
@@ -33,7 +34,11 @@
         </footer>
     </div>
 
+    <!-- snarkjs for ZK proof generation -->
+    <script src="https://cdn.jsdelivr.net/npm/snarkjs@0.7.4/build/snarkjs.min.js"></script>
+    
     <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ asset('js/zk-snark.js') }}"></script>
     @stack('scripts')
 </body>
 </html>

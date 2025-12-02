@@ -13,15 +13,14 @@ class Wallet extends Model
 
     protected $fillable = [
         'user_id',
-        'wallet_address',
+        'wallet_address',      // Internal app reference (ZKWALLET...)
+        'polygon_address',     // Real blockchain address (0x...)
         'public_key',
         'encrypted_private_key',
-        'balance',
-        'blockchain_balance',
-        'polygon_address',
+        'balance',             // Single balance from blockchain
         'zk_proof_commitment',
-        'last_blockchain_sync',
-        'auto_sync_enabled',
+        'last_sync_at',
+        'is_active',
     ];
 
     protected $hidden = [
@@ -29,31 +28,69 @@ class Wallet extends Model
     ];
 
     protected $casts = [
-        'balance' => 'decimal:8',
-        'blockchain_balance' => 'decimal:8',
-        'last_blockchain_sync' => 'datetime',
-        'auto_sync_enabled' => 'boolean',
+        'balance' => 'decimal:18',
+        'last_sync_at' => 'datetime',
+        'is_active' => 'boolean',
     ];
 
+    /**
+     * Get the user that owns the wallet
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Get sent transactions
+     */
     public function sentTransactions(): HasMany
     {
         return $this->hasMany(Transaction::class, 'sender_wallet_id');
     }
 
+    /**
+     * Get received transactions
+     */
     public function receivedTransactions(): HasMany
     {
         return $this->hasMany(Transaction::class, 'receiver_wallet_id');
     }
 
+    /**
+     * Get all transactions (sent and received)
+     */
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class, 'sender_wallet_id')
             ->union($this->hasMany(Transaction::class, 'receiver_wallet_id'));
     }
-}
 
+    /**
+     * Check if wallet has valid blockchain address
+     */
+    public function hasBlockchainAddress(): bool
+    {
+        return !empty($this->polygon_address) && 
+               preg_match('/^0x[a-fA-F0-9]{40}$/', $this->polygon_address);
+    }
+
+    /**
+     * Get formatted balance (human readable)
+     */
+    public function getFormattedBalanceAttribute(): string
+    {
+        return number_format((float)$this->balance, 6) . ' MATIC';
+    }
+
+    /**
+     * Check if balance needs sync (older than 5 minutes)
+     */
+    public function needsSync(): bool
+    {
+        if (!$this->last_sync_at) {
+            return true;
+        }
+        return $this->last_sync_at->diffInMinutes(now()) >= 5;
+    }
+}

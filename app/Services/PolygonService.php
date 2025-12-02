@@ -9,11 +9,12 @@ use Web3\Contract;
 use Web3\Utils;
 use kornrunner\Keccak;
 use kornrunner\Ethereum\Transaction;
+use Elliptic\EC;
 
 /**
  * Polygon Blockchain Service
  * Service untuk interaksi dengan Polygon Network
- * Enhanced with Web3.php library integration
+ * Uses proper secp256k1 cryptography for wallet generation
  */
 class PolygonService
 {
@@ -23,6 +24,7 @@ class PolygonService
     private $privateKey;
     private $web3;
     private $eth;
+    private $ec;
 
     public function __construct()
     {
@@ -30,6 +32,9 @@ class PolygonService
         $this->chainId = config('services.polygon.chain_id', env('POLYGON_CHAIN_ID', '80002'));
         $this->contractAddress = config('services.polygon.contract_address', env('POLYGON_CONTRACT_ADDRESS'));
         $this->privateKey = config('services.polygon.private_key', env('POLYGON_PRIVATE_KEY'));
+        
+        // Initialize secp256k1 elliptic curve
+        $this->ec = new EC('secp256k1');
         
         // Initialize Web3
         $this->initializeWeb3();
@@ -48,6 +53,134 @@ class PolygonService
             Log::error('[PolygonService] Failed to initialize Web3: ' . $e->getMessage());
             $this->web3 = null;
             $this->eth = null;
+        }
+    }
+
+    /**
+     * Create new wallet on blockchain with PROPER secp256k1 cryptography
+     * This creates a REAL Polygon-compatible wallet
+     */
+    public function createBlockchainWallet()
+    {
+        try {
+            // Generate cryptographically secure random 32 bytes (256 bits) for private key
+            $privateKeyBytes = random_bytes(32);
+            $privateKey = bin2hex($privateKeyBytes);
+            
+            // Generate key pair using secp256k1 elliptic curve
+            $keyPair = $this->ec->keyFromPrivate($privateKey);
+            
+            // Get public key (uncompressed format: 04 + x + y = 65 bytes = 130 hex chars)
+            $publicKeyPoint = $keyPair->getPublic();
+            $publicKeyX = str_pad($publicKeyPoint->getX()->toString(16), 64, '0', STR_PAD_LEFT);
+            $publicKeyY = str_pad($publicKeyPoint->getY()->toString(16), 64, '0', STR_PAD_LEFT);
+            $publicKey = '04' . $publicKeyX . $publicKeyY;
+            
+            // Derive address from public key
+            // 1. Hash public key (without 04 prefix) with Keccak-256
+            // 2. Take last 20 bytes (40 hex chars)
+            // 3. Prepend 0x
+            $publicKeyWithoutPrefix = $publicKeyX . $publicKeyY;
+            $hash = Keccak::hash(hex2bin($publicKeyWithoutPrefix), 256);
+            $address = '0x' . substr($hash, -40);
+            
+            // Apply EIP-55 checksum encoding to address
+            $checksumAddress = $this->toChecksumAddress($address);
+            
+            Log::info('[PolygonService] New blockchain wallet created', [
+                'address' => $checksumAddress,
+                'public_key_length' => strlen($publicKey),
+            ]);
+            
+            return [
+                'success' => true,
+                'address' => $checksumAddress,
+                'public_key' => $publicKey,
+                'private_key' => $privateKey,
+            ];
+            
+        } catch (\Exception $e) {
+            Log::error('[PolygonService] Wallet creation error: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Convert address to EIP-55 checksum format
+     * This makes addresses compatible with MetaMask and other wallets
+     */
+    private function toChecksumAddress($address)
+    {
+        $address = strtolower(str_replace('0x', '', $address));
+        $hash = Keccak::hash($address, 256);
+        
+        $checksumAddress = '0x';
+        for ($i = 0; $i < 40; $i++) {
+            if (intval($hash[$i], 16) >= 8) {
+                $checksumAddress .= strtoupper($address[$i]);
+            } else {
+                $checksumAddress .= $address[$i];
+            }
+        }
+        
+        return $checksumAddress;
+    }
+
+    /**
+     * Verify that a private key is valid and matches an address
+     */
+    public function verifyPrivateKey($privateKey, $expectedAddress)
+    {
+        try {
+            $keyPair = $this->ec->keyFromPrivate($privateKey);
+            $publicKeyPoint = $keyPair->getPublic();
+            
+            $publicKeyX = str_pad($publicKeyPoint->getX()->toString(16), 64, '0', STR_PAD_LEFT);
+            $publicKeyY = str_pad($publicKeyPoint->getY()->toString(16), 64, '0', STR_PAD_LEFT);
+            
+            $hash = Keccak::hash(hex2bin($publicKeyX . $publicKeyY), 256);
+            $derivedAddress = '0x' . substr($hash, -40);
+            
+            return strtolower($derivedAddress) === strtolower($expectedAddress);
+            
+        } catch (\Exception $e) {
+            Log::error('[PolygonService] Private key verification failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Sign a message with private key
+     */
+    public function signMessage($message, $privateKey)
+    {
+        try {
+            $keyPair = $this->ec->keyFromPrivate($privateKey);
+            $messageHash = Keccak::hash($message, 256);
+            
+            $signature = $keyPair->sign($messageHash, ['canonical' => true]);
+            
+            $r = str_pad($signature->r->toString(16), 64, '0', STR_PAD_LEFT);
+            $s = str_pad($signature->s->toString(16), 64, '0', STR_PAD_LEFT);
+            $v = dechex($signature->recoveryParam + 27);
+            
+            return [
+                'success' => true,
+                'signature' => '0x' . $r . $s . $v,
+                'r' => '0x' . $r,
+                's' => '0x' . $s,
+                'v' => '0x' . $v,
+            ];
+            
+        } catch (\Exception $e) {
+            Log::error('[PolygonService] Message signing failed: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
         }
     }
 
@@ -271,7 +404,6 @@ class PolygonService
         }
     }
     
-    
     /**
      * Get transaction count (nonce)
      */
@@ -306,11 +438,18 @@ class PolygonService
      */
     private function encodeFunctionCall($method, $params)
     {
-        // Dalam production, gunakan proper ABI encoding
-        // Gunakan library web3.php atau manual encoding sesuai ABI spec
+        $methodSignature = substr(Keccak::hash($method, 256), 0, 8);
+        $encodedParams = '';
         
-        $methodSignature = substr(hash('sha256', $method), 0, 8);
-        $encodedParams = bin2hex(json_encode($params));
+        foreach ($params as $param) {
+            if (is_numeric($param)) {
+                $encodedParams .= str_pad(dechex($param), 64, '0', STR_PAD_LEFT);
+            } elseif (strpos($param, '0x') === 0) {
+                $encodedParams .= str_pad(substr($param, 2), 64, '0', STR_PAD_LEFT);
+            } else {
+                $encodedParams .= bin2hex($param);
+            }
+        }
         
         return '0x' . $methodSignature . $encodedParams;
     }
@@ -320,7 +459,6 @@ class PolygonService
      */
     private function decodeResult($result)
     {
-        // Dalam production, decode sesuai ABI
         return $result;
     }
 
@@ -330,8 +468,23 @@ class PolygonService
     private function toWei($amount)
     {
         // 1 ether = 10^18 wei
-        $weiAmount = bcmul($amount, '1000000000000000000');
-        return '0x' . dechex((int)$weiAmount);
+        $weiAmount = bcmul((string)$amount, '1000000000000000000', 0);
+        return '0x' . $this->bcdechex($weiAmount);
+    }
+
+    /**
+     * Convert large decimal to hex
+     */
+    private function bcdechex($dec)
+    {
+        $hex = '';
+        do {
+            $last = bcmod($dec, 16);
+            $hex = dechex($last) . $hex;
+            $dec = bcdiv(bcsub($dec, $last), 16);
+        } while ($dec > 0);
+        
+        return $hex ?: '0';
     }
 
     /**
@@ -459,61 +612,6 @@ class PolygonService
     }
 
     /**
-     * Create new wallet on blockchain
-     */
-    public function createBlockchainWallet()
-    {
-        try {
-            // Generate new wallet
-            $privateKey = bin2hex(random_bytes(32));
-            $publicKey = $this->getPublicKeyFromPrivate($privateKey);
-            $address = $this->getAddressFromPublicKey($publicKey);
-            
-            Log::info('[PolygonService] New blockchain wallet created: ' . $address);
-            
-            return [
-                'success' => true,
-                'address' => $address,
-                'public_key' => $publicKey,
-                'private_key' => $privateKey, // Should be encrypted before storage
-            ];
-        } catch (\Exception $e) {
-            Log::error('[PolygonService] Wallet creation error: ' . $e->getMessage());
-            return [
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
-        }
-    }
-
-    /**
-     * Get public key from private key
-     */
-    private function getPublicKeyFromPrivate($privateKey)
-    {
-        // In production, use proper secp256k1 curve
-        // For now, simplified version
-        return '04' . hash('sha256', $privateKey) . hash('sha256', $privateKey . 'pub');
-    }
-
-    /**
-     * Get address from public key
-     */
-    private function getAddressFromPublicKey($publicKey)
-    {
-        // Remove '04' prefix if present
-        $publicKey = preg_replace('/^04/', '', $publicKey);
-        
-        // Hash public key with Keccak-256
-        $hash = Keccak::hash(hex2bin($publicKey), 256);
-        
-        // Take last 20 bytes (40 hex chars) and prepend 0x
-        $address = '0x' . substr($hash, -40);
-        
-        return $address;
-    }
-
-    /**
      * Transfer MATIC to wallet (for top-up)
      */
     public function transferMatic($toAddress, $amount)
@@ -570,12 +668,10 @@ class PolygonService
 
     /**
      * Get current MATIC price in IDR
-     * In production, use price oracle or API like CoinGecko
      */
     public function getMaticPriceInIDR()
     {
         try {
-            // Use CoinGecko API to get real-time price
             $response = Http::timeout(10)->get('https://api.coingecko.com/api/v3/simple/price', [
                 'ids' => 'matic-network',
                 'vs_currencies' => 'idr',
@@ -591,13 +687,12 @@ class PolygonService
                 }
             }
 
-            // Fallback price if API fails
             Log::warning('[PolygonService] Using fallback MATIC price');
-            return 10000; // Default fallback: 10,000 IDR per MATIC
+            return 10000;
 
         } catch (\Exception $e) {
             Log::error('[PolygonService] Price fetch error: ' . $e->getMessage());
-            return 10000; // Fallback price
+            return 10000;
         }
     }
 
@@ -632,7 +727,7 @@ class PolygonService
     }
 
     /**
-     * Sync wallet balance from blockchain
+     * Sync wallet balance from blockchain and update database
      */
     public function syncWalletBalance($walletAddress)
     {
@@ -645,6 +740,7 @@ class PolygonService
                 
                 if ($wallet) {
                     $wallet->balance = $balanceData['balance'];
+                    $wallet->last_sync_at = now();
                     $wallet->save();
                     
                     Log::info('[PolygonService] Wallet balance synced', [
@@ -665,5 +761,25 @@ class PolygonService
             ];
         }
     }
-}
 
+    /**
+     * Validate Polygon address format
+     */
+    public function isValidAddress($address)
+    {
+        return preg_match('/^0x[a-fA-F0-9]{40}$/', $address) === 1;
+    }
+
+    /**
+     * Get network info
+     */
+    public function getNetworkInfo()
+    {
+        return [
+            'rpc_url' => $this->rpcUrl,
+            'chain_id' => $this->chainId,
+            'contract_address' => $this->contractAddress,
+            'network_name' => $this->chainId == '137' ? 'Polygon Mainnet' : 'Polygon Amoy Testnet',
+        ];
+    }
+}

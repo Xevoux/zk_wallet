@@ -3,20 +3,30 @@
   "version": "1.0.0",
   "description": "Zero-Knowledge Proof circuits for ZK Payment system",
   "scripts": {
-    "compile:balance": "circom balance_check.circom --r1cs --wasm --sym -o build/",
-    "compile:transfer": "circom private_transfer.circom --r1cs --wasm --sym -o build/",
-    "compile:auth": "circom auth_proof.circom --r1cs --wasm --sym -o build/",
-    "compile:all": "npm run compile:balance && npm run compile:transfer && npm run compile:auth",
-    "setup:balance": "snarkjs groth16 setup build/balance_check.r1cs pot12_final.ptau balance_check_0000.zkey && snarkjs zkey contribute balance_check_0000.zkey balance_check_final.zkey --name='First' -v",
-    "setup:transfer": "snarkjs groth16 setup build/private_transfer.r1cs pot12_final.ptau private_transfer_0000.zkey && snarkjs zkey contribute private_transfer_0000.zkey private_transfer_final.zkey --name='First' -v",
-    "setup:auth": "snarkjs groth16 setup build/auth_proof.r1cs pot12_final.ptau auth_proof_0000.zkey && snarkjs zkey contribute auth_proof_0000.zkey auth_proof_final.zkey --name='First' -v",
-    "export:vkey": "snarkjs zkey export verificationkey balance_check_final.zkey ../storage/keys/balance_verification_key.json && snarkjs zkey export verificationkey private_transfer_final.zkey ../storage/keys/transfer_verification_key.json && snarkjs zkey export verificationkey auth_proof_final.zkey ../storage/keys/auth_verification_key.json",
-    "export:solidity": "snarkjs zkey export solidityverifier balance_check_final.zkey ../contracts/BalanceCheckVerifier.sol && snarkjs zkey export solidityverifier private_transfer_final.zkey ../contracts/PrivateTransferVerifier.sol && snarkjs zkey export solidityverifier auth_proof_final.zkey ../contracts/AuthProofVerifier.sol",
-    "download:pot": "curl https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_12.ptau -o pot12_final.ptau",
-    "test:proof": "node test_proof.js"
+    "install:circom": "echo 'Please install circom manually from https://docs.circom.io/getting-started/installation/'",
+    "download:ptau": "curl -L https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_14.ptau -o ptau/pot14_final.ptau",
+    "download:ptau:win": "powershell -Command \"Invoke-WebRequest -Uri 'https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_14.ptau' -OutFile 'ptau/pot14_final.ptau'\"",
+    "compile:auth": "circom auth_proof.circom --r1cs --wasm --sym -o build/auth_proof -l node_modules",
+    "compile:balance": "circom balance_check.circom --r1cs --wasm --sym -o build/balance_check -l node_modules",
+    "compile:transfer": "circom private_transfer.circom --r1cs --wasm --sym -o build/private_transfer -l node_modules",
+    "compile:all": "npm run compile:auth && npm run compile:balance && npm run compile:transfer",
+    "setup:auth": "node scripts/setup.js auth_proof",
+    "setup:balance": "node scripts/setup.js balance_check",
+    "setup:transfer": "node scripts/setup.js private_transfer",
+    "setup:all": "npm run setup:auth && npm run setup:balance && npm run setup:transfer",
+    "export:keys": "node scripts/export-keys.js",
+    "export:verifiers": "node scripts/export-verifiers.js",
+    "build": "npm run compile:all && npm run setup:all && npm run export:keys && npm run export:verifiers",
+    "test": "node scripts/test-proofs.js",
+    "clean": "rimraf build keys ../contracts/contracts/verifiers"
   },
   "dependencies": {
     "circomlib": "^2.0.5",
-    "snarkjs": "^0.7.4"
+    "circomlibjs": "^0.1.7",
+    "snarkjs": "^0.7.4",
+    "ffjavascript": "^0.3.0"
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.5"
   }
 }

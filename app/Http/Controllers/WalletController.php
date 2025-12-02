@@ -386,14 +386,15 @@ class WalletController extends Controller
                 // Update transaction with blockchain hash
                 $transaction->markAsCompleted($transferResult['tx_hash']);
                 
-                // Update wallet balance
-                $wallet->balance += $transaction->crypto_amount;
-                $wallet->save();
+                // Sync wallet balance from blockchain (no manual update)
+                $this->polygonService->syncWalletBalance($wallet->polygon_address);
+                $wallet->refresh();
 
                 Log::info('[WalletController] Top-up completed successfully', [
                     'order_id' => $transaction->order_id,
                     'tx_hash' => $transferResult['tx_hash'],
                     'matic_amount' => $transaction->crypto_amount,
+                    'synced_balance' => $wallet->balance,
                 ]);
 
                 DB::commit();
@@ -617,31 +618,18 @@ class WalletController extends Controller
             $result = $faucetService->requestTestMatic($user->id, $wallet->polygon_address);
 
             if ($result['success']) {
-                // Update wallet balance if not simulation
-                if (!($result['simulation'] ?? false)) {
-                    try {
-                        $wallet->balance += $result['amount'];
-                        $wallet->save();
-
-                        Log::info('[WalletController] Wallet balance updated after faucet distribution', [
-                            'user_id' => $user->id,
-                            'amount_added' => $result['amount'],
-                            'new_balance' => $wallet->balance,
-                        ]);
-                    } catch (\Exception $balanceError) {
-                        Log::error('[WalletController] Failed to update wallet balance', [
-                            'user_id' => $user->id,
-                            'error' => $balanceError->getMessage(),
-                        ]);
-                        // Don't fail the request, but log the issue
-                    }
-                }
+                // Sync balance from blockchain (no manual update)
+                $this->polygonService->syncWalletBalance($wallet->polygon_address);
+                
+                // Refresh wallet data
+                $wallet->refresh();
 
                 Log::info('[WalletController] Test MATIC requested successfully', [
                     'user_id' => $user->id,
                     'amount' => $result['amount'],
                     'tx_hash' => $result['tx_hash'],
                     'simulation' => $result['simulation'] ?? false,
+                    'synced_balance' => $wallet->balance,
                 ]);
 
                 return response()->json($result);
